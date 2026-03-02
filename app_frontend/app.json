@@ -1,11 +1,11 @@
 {
    "expo": {
-      "name": "TopformIRASApi",
-      "slug": "TopformIRASApi",
+      "name": "JSPro",
+      "slug": "JSPro",
       "version": "1.0.0",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
-      "scheme": "topformirasapi",
+      "scheme": "jspro",
       "userInterfaceStyle": "automatic",
       "newArchEnabled": true,
       "ios": {
