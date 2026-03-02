@@ -1,0 +1,38 @@
+├── assets/
+├── scripts/
+├── src/
+│   ├── app/
+│   │   ├── api/                    # API routes in a separate folder
+│   │   │   ├── event+api.ts
+│   │   │   └── user+api.ts
+│   │   ├── _layout.tsx
+│   │   ├── _layout.web.tsx         # separate layout file for web
+│   │   ├── index.tsx
+│   │   ├── events.tsx
+│   │   └── settings.tsx
+│   ├── components/
+│   │   ├── table/
+│   │   │   ├── cell.tsx
+│   │   │   └── index.tsx
+│   │   ├── bar-chart.tsx
+│   │   ├── bar-chart.web.tsx        # separate components for web and native
+│   │   └── button.tsx
+│   ├── screens/
+│   │   ├── home/
+│   │   │   ├── card.tsx            # component only used in the home page
+│   │   │   └── index.tsx           # returned from /src/app/index.tsx
+│   │   ├── events.tsx              # returned from /src/app/events.tsx
+│   │   └── settings.tsx            # returned from /src/app/settings.tsx
+│   ├── server/                     # code used in /api
+│   │   ├── auth.ts
+│   │   └── db.ts
+│   ├── utils/                      # reusable utilities
+│   │   ├── format-date.ts
+│   │   ├── format-date.test.ts      # unit test next to the file being tested
+│   │   └── pluralize.ts
+│   ├── hooks/
+│   │   ├── use-app-state.ts
+│   │   └── use-theme.ts
+├── app.json
+├── eas.json
+└── package.json

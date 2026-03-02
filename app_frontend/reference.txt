@@ -1,0 +1,69 @@
+Expo Reference
+https://expo.dev/blog/12-tips-for-setting-up-your-next-expo-project
+https://expo.dev/blog/best-practices-for-reducing-lag-in-expo-apps
+https://expo.dev/blog/from-web-to-native-with-react
+
+
+
+*** Run npx expo lint, anything that is not aligned with Prettier formatting will be caught as an error.
+
+***
+ESLint is slow
+ESLint can be slow to run on large projects. The ea/siest way to speed up the process is to lint fewer files. Add a .eslintignore file to your project root to ignore certain files and directories such as:
+
+/.expo
+node_modules
+
+***
+npx expo install it installs the latest compatible version.
+
+*** expo router
+
+https://www.youtube.com/watch?v=gy_MDT4hIms
+https://docs.expo.dev/router/basics/navigation/
+
+*** 
+themes
+https://reactnavigation.org/docs/themes/
+
+*** 
+Linkking in React Native EXPO APP
+https://reactnavigation.org/docs/deep-linking?framework=expo
+https://www.youtube.com/watch?v=5wcx67t1jdc
+ANDROID - Deep Linking
+IOS - Unirversal Linking
+
+npx expo install expo-linking
+
+*** router push with params in a detailed view
+<Presssable 
+   onPress={() => 
+      router.push({
+         pathname: "users/[id]",
+         params: { id: 2},
+      })
+   }
+/>
+In Other Page,
+import useLocalSearchParams
+const { id } = useLocalSearchParams();
+
+***
+stack.protected for auth and dashboard
+https://github.com/aaronksaunders/expo-router-guard-demo/blob/main/app/_layout.tsx
+
+
+RTK - Redux Toolkit
+https://medium.com/@bharathibala21/building-an-auth-slice-with-redux-toolkit-thunk-in-react-native-175cb9d1e26b
+
+
+*** IMPORTANT - DONT MISS THIS LINK
+REDUX TOOLKIT ADVANCED, NODE EXPRESS ADVANCED 
+https://github.com/Chinwike1/redux-user-auth/tree/main
+
+
+*** SHOW Success / Error Message throught RTK
+Search Term: show success message when dispatch action in react native redux toolkit
+
+*** node js express crud example with mysql in typescript
+https://www.google.com/search?q=node+js+express+crud+example+with+mysql+in+typescript&client=ubuntu-sn&sca_esv=e46d580fc3c87728&channel=fs&biw=1550&bih=803&sxsrf=ANbL-n4aaxBIZVQBXKBsAjvyq6h74dSPgw%3A1772107347572&ei=UzagaaTTItmdseMPiqPW2QE&sclient=gws-wiz-serp&udm=50&fbs=ADc_l-aN0CWEZBOHjofHoaMMDiKpmAsnXCN5UBx17opt8eaTXyCfNeKGeJOJfUwi1MTUzwQIwJlelVIdgOjufMHPjJWrCH_lM-PPnh9_UTuFIoFx3vie190wp81bExW7XpJBGqtEeWPcxFBPHyT302wzjnD4O0-YTouLDdtGiM7MTz8RXYIgeT3hu1VEc1PU4BJbBHYAZovGSGMCRGPbOhx7obGjwaPyqg&ved=2ahUKEwjls4zO04CTAxUBUGcHHfI5ESEQ0NsOegQIAxAB&aep=10&ntc=1&mstk=AUtExfCLywWRcBblUvmFW3es-XEbLfT_fq74ujJ1VqX288j0NNKXX3DzgiO3SCzTbkOm7fggx7kgp8KRUPUrSi5PXTrN33-tjDSKryN1sJ9M-TC-HjaYcrAjvd3qsivd7q432NzdKy3rNjuMqnnDeFXfS0-71XvKCLBR4B1JkDMWwFnRYGrZXbejWZsAMjVFztbpbCDIBVDdqdi_ABOsdYL6LCaE10HNNLy5cj7BMUv64d6B5NzTj3tTNhNzxw&csuir=1
