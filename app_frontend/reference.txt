@@ -4,7 +4,6 @@ https://expo.dev/blog/best-practices-for-reducing-lag-in-expo-apps
 https://expo.dev/blog/from-web-to-native-with-react
 
 
-
 *** Run npx expo lint, anything that is not aligned with Prettier formatting will be caught as an error.
 
 ***

@@ -1,7 +1,6 @@
 import { userLogin } from '@/src/features/auth/authActions';
 import { useAppDispatch, useAppSelector } from '@/src/features/hooks';
 import { Feather, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -9,12 +8,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Toast from 'react-native-toast-message';
 import styles from '../style/auth';
 
-export default function login() {
+export default function Login() {
    const route = useRouter();
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(true);
-
 
    const { userInfo, error } = useAppSelector((state) => state.auth)
    const dispatch = useAppDispatch()
@@ -47,29 +45,11 @@ export default function login() {
       }
    }
 
-   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-   const [userType, setUserType] = useState<string>('');
-
-   async function getData() {
-      const loginStatus: boolean = Boolean(await AsyncStorage.getItem('isLoggedIn'));
-      const userType: string = String(await AsyncStorage.getItem('userType'));
-      setIsLoggedIn(loginStatus);
-      setUserType(userType);
-
-      console.log("\n\n\n***PAGE >>> APP LAYOUT");
-      console.log("Logged IN >>> " + isLoggedIn);
-      console.log("User Level >>> " + userType);
-
-      if(isLoggedIn) {
-         route.replace('/(app)/dashboard');
-      }
-   }
-
    useEffect(() => {
-    if (userInfo) {
-      route.push('/(app)/dashboard')
-    }
-  }, [route, userInfo])
+      if (userInfo) {
+         route.push('/(app)/Dashboard')
+      }
+   }, [route, userInfo])
 
    return (
 
@@ -93,7 +73,7 @@ export default function login() {
 
             <View style={{ height: 30 }}>
 
-               <Text>Error: {error}</Text>
+               <Text>{error}</Text>
 
             </View>
 
@@ -150,7 +130,7 @@ export default function login() {
                </View>
 
                <TouchableOpacity
-                  onPress={() => { Toast.hide(); route.push('/(auth)/forgot_password') }} style={{ alignSelf: 'flex-end' }}>
+                  onPress={() => { Toast.hide(); route.push('/(auth)/ForgotPassword') }} style={{ alignSelf: 'flex-end' }}>
                   <Text style={{ marginTop: 10, color: '#5c5f66ff', fontSize: 14, fontWeight: '500', letterSpacing: .5 }}>Forgot Password?</Text>
                </TouchableOpacity>
 
@@ -166,7 +146,7 @@ export default function login() {
                </TouchableOpacity>
 
                <TouchableOpacity
-                  onPress={() => { Toast.hide(); route.push('/(auth)/signup') }}>
+                  onPress={() => { Toast.hide(); route.push('/(auth)/Signup') }}>
                   <Text style={styles.linkText}>Don't have an account? <Text style={styles.link}>Sign Up here</Text></Text>
                </TouchableOpacity>
             </View>

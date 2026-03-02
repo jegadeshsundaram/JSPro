@@ -1,13 +1,13 @@
 import Back from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Avatar } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import styles from '../style/profile';
 
-const admin_profile = () => {
+const UserProfile = () => {
    // const user = JSON.parse(user);
 
    const [image, setImage] = useState('');
@@ -15,21 +15,9 @@ const admin_profile = () => {
    const [email, setEmail] = useState('');
    const [mobile, setMobile] = useState('');
 
-   // const selectPhoto = () => {
-   //    ImagePicker.openPicker({
-   //       width: 400,
-   //       height: 400,
-   //       cropping: true,
-   //       includeBase64: true,
-   //       cropperCircleOverlay: true,
-   //       avoidEmptySpaceAroundImage: true,
-   //       freeStyleCropEnabled: true,
-   //    }).then(image => {
-   //       console.log(image);
-   //       const data = `data:${image.mime};base64,${image.data}`;
-   //       setImage(data);
-   //    });
-   // };
+   const selectPhoto = () => {
+      
+   };
 
    useEffect(() => {
       // setImage(user.profile_pic);
@@ -99,5 +87,5 @@ const admin_profile = () => {
       </KeyboardAwareScrollView>
    )
 }
-export default admin_profile
+export default UserProfile
 

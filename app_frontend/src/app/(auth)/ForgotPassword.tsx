@@ -33,7 +33,7 @@ export default function forgotPassword() {
                      text2: 'The code is sent to email!'
                   });
 
-                  route.push('/(auth)/reset_password');
+                  route.push('/(auth)/ResetPassword');
                } else if (res.data.status == "email_not_exists") {
 
                   Toast.show({
@@ -102,7 +102,7 @@ export default function forgotPassword() {
                </TouchableOpacity>
 
                <TouchableOpacity
-                  onPress={() => { route.push('/(auth)/login') }}>
+                  onPress={() => { route.push('/(auth)/Login') }}>
                   <Text style={{ marginTop: 30, fontSize: 16, color: '#404143', fontWeight: '500' }}>Back to Login</Text>
                </TouchableOpacity>
             </View>

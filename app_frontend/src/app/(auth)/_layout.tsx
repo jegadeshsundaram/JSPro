@@ -1,13 +1,12 @@
 import { Stack } from "expo-router";
-import React from "react";
 
 export default function AuthLayout() {   
    return (
       <Stack screenOptions={{headerShown: false}}>
-         <Stack.Screen name="login" />
-         <Stack.Screen name="signup" />
-         <Stack.Screen name="forgot_password" />
-         <Stack.Screen name="reset_password" />
+         <Stack.Screen name="Login" />
+         <Stack.Screen name="Signup" />
+         <Stack.Screen name="ForgotPassword" />
+         <Stack.Screen name="ResetPassword" />
       </Stack>
    )
 }

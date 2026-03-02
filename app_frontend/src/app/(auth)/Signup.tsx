@@ -39,7 +39,7 @@ export default function Signup() {
                text1: 'User Registered',
          });
          // redirect user to login page if registration was successful
-         route.push('/login')
+         route.push('/Login')
       }
    }, [route, userInfo, success])
    
@@ -123,7 +123,7 @@ export default function Signup() {
 
             <View style={{ height: 30 }}>
 
-               <Text>Error: {error}</Text>
+               <Text>{error}</Text>
 
             </View>
 
@@ -282,7 +282,7 @@ export default function Signup() {
                   </View>
                </TouchableOpacity>
 
-               <TouchableOpacity onPress={() => route.push('/(auth)/login')}>
+               <TouchableOpacity onPress={() => route.push('/(auth)/Login')}>
                   <View>
                      <Text style={{ marginTop: 30, fontSize: 16, color: '#404143', fontWeight: '500', letterSpacing: .5 }}>Back to Login</Text>
                   </View>

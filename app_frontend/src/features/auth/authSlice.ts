@@ -6,8 +6,9 @@ import type { AuthState, User } from '../types';
 
 const initialState: AuthState = {
    loading: false,
-   userInfo: null,
+   isAuthenticated: false,
    userToken: null,
+   userInfo: null,
    error: null,
    success: false,
 }
@@ -17,8 +18,11 @@ const authSlice = createSlice({
    initialState,
    reducers: {
       logout: (state) => {
-         AsyncStorage.setItem('userToken', '');
          state.loading = false;
+
+         state.isAuthenticated = false;
+         AsyncStorage.setItem('userToken', '');
+
          state.userInfo = null;
          state.userToken = null;
          state.error = null;
@@ -36,8 +40,9 @@ const authSlice = createSlice({
          })
          .addCase(userLogin.fulfilled, (state, action) => {
             state.loading = false
-            state.userInfo = action.payload
+            state.isAuthenticated = true;
             state.userToken = action.payload.userToken ?? null
+            state.userInfo = action.payload
          })
          .addCase(userLogin.rejected, (state, action) => {
             state.loading = false

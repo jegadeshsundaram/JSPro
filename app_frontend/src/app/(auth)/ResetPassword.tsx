@@ -40,7 +40,7 @@ export default function ResetPassword() {
                      text1: 'Password updated',
                   });
 
-                  route.push('/(auth)/login');
+                  route.push('/(auth)/Login');
 
                } else if (res.data.status == "code_not_exist") {
 
@@ -187,7 +187,7 @@ export default function ResetPassword() {
                </TouchableOpacity>
 
                <TouchableOpacity
-                  onPress={() => { route.push('/(auth)/signup') }}>
+                  onPress={() => { route.push('/(auth)/Signup') }}>
                   <Text style={{ marginTop: 30, fontSize: 16, color: '#404143', fontWeight: '500' }}>Back to Login</Text>
                </TouchableOpacity>
             </View>

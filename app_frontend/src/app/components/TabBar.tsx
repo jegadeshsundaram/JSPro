@@ -11,7 +11,7 @@ export default function TabBar() {
    function handleLogout() {
       dispatch(logout())
 
-      router.replace('/login');
+      router.replace('/Login');
    }
 
    return (
