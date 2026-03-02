@@ -1,0 +1,42 @@
+{
+  "name": "backend_tpf",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp -r src/mails dist/mails",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mysql": "^2.15.27",
+    "@types/node": "^25.3.0",
+    "@types/nodemailer": "^7.0.11",
+    "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.1",
+    "mysql2": "^3.16.1",
+    "nodemailer": "^7.0.13",
+    "winston": "^3.19.0"
+  }
+}
