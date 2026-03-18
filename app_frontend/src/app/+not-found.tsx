@@ -1,5 +1,4 @@
 import { Link, Stack } from 'expo-router'
-import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 const NotFoundScreen = () => {
@@ -8,7 +7,7 @@ const NotFoundScreen = () => {
          <Stack.Screen options={{ title: 'Oops! not found' }} />
          <View
             style={styles.container}>            
-            <Link href="/(auth)/login" style={styles.button}>Go to Home Screen</Link>
+            <Link href="/(auth)/Login" style={styles.button}>Go to Home Screen</Link>
          </View>
       </>
    )

@@ -36,13 +36,12 @@ export default StyleSheet.create({
       paddingVertical: 15,
       borderRadius: 50,
    },
-   header: {
-      backgroundColor: '#0163D2',
+   profileHeader: {
       flexDirection: 'row',
       height: 100,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingTop: 35
+      paddingTop: 45
    },
    avatar: {
       borderRadius: 80,
@@ -78,17 +77,16 @@ export default StyleSheet.create({
       color: 'white',
    },
    backIcon: {
-      marginLeft: 20,
-      color: 'white',
+      width: 45,
+      height: 45,
+      backgroundColor: 'gainsboro',
+      borderRadius: 5,
    },
    nameText: {
-      color: 'white',
       fontSize: 24,
-
-      fontStyle: 'normal',
-      fontFamily: 'Open Sans',
-      fontWeight: 'bold',
       textAlign: 'center',
+      fontWeight: '500',
+      paddingTop: 2,
    },
    infoEditView: {
       marginTop: 10,
@@ -121,4 +119,20 @@ export default StyleSheet.create({
       color: 'black',
       fontSize: 15,
    },
+   inputContainer: {
+      borderWidth: 1,
+      borderColor: '#c8cbcfff',
+      paddingTop: 10,
+      paddingLeft: 10,
+      paddingRight: 10,
+      borderRadius: 20,
+      marginBottom: 22
+   },
+   IC_TextInput: {
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#fff',
+      fontSize: 16,
+      fontWeight: '500'
+   }
 });

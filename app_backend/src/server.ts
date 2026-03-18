@@ -4,6 +4,10 @@ import dotenv from 'dotenv'
 import logger from './config/logger.js'
 import userRoutes from './routes/userRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
+import path from 'path'
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
 
 // Deployment configuration
 // configure env file in dev mode
@@ -25,6 +29,12 @@ app.use(
     origin: '*',
   }),
 )
+
+// Serve static files (uploaded images)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDir = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadDir));
 
 // API routes
 app.use('/api/user', userRoutes)

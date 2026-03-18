@@ -1,61 +1,118 @@
+import { useAppSelector } from '@/src/features/hooks';
 import Back from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Avatar } from 'react-native-paper';
-import Toast from 'react-native-toast-message';
+import cstyles from '../style/common';
 import styles from '../style/profile';
 
 const UserProfile = () => {
-   // const user = JSON.parse(user);
 
-   const [image, setImage] = useState('');
-   const [name, setName] = useState('');
-   const [email, setEmail] = useState('');
-   const [mobile, setMobile] = useState('');
+   const { userInfo } = useAppSelector((state) => state.auth)
 
-   const selectPhoto = () => {
+    useEffect(() => {      
+      if (userInfo) {
+         console.log("User updated:", userInfo._id);
+      }
       
+      // Perform side effects here (e.g., API calls based on state)
+   }, [userInfo]);
+
+   const router = useRouter();
+
+   const [image, setImage] = useState<string | null>(null);
+   const [fullName, setFullName] = useState('');
+   const [phone, setPhone] = useState('');
+
+   console.log(userInfo?.fullName);
+
+   const selectPhoto = async () => {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+         Alert.alert(
+            "Permission Denied",
+            `Sorry, we need camera roll permission to upload photos.`
+         );
+         return;
+      }
+
+      let pickerResult = await ImagePicker.launchImageLibraryAsync({
+         mediaTypes: ['images'],
+         allowsEditing: true,
+         aspect: [4, 3],
+         quality: 1,
+      });
+
+      if (!pickerResult.canceled) {
+         setImage(pickerResult.assets[0].uri);
+      }
    };
 
-   useEffect(() => {
-      // setImage(user.profile_pic);
-      // setName(user.full_name);
-      // setEmail(user.email);
-      // setMobile(user.phone);
-   }, []);
 
-   const updateProfile = () => {
-      const formdata = {
-         name: name,
-         image,
-         email,
-         mobile,
+   const handelProfileUpdate = async () => {
+
+      // Create FormData object
+      const formData = new FormData();
+      const user_id: any = userInfo?._id;
+
+      if (image) {
+         const userName = userInfo?.fullName.replaceAll(' ', '').toLowerCase();
+
+
+         const uri = image;
+         const filename = uri.split('/').pop();
+         const match = /\.(\w+)$/.exec(filename!);
+         const type = match ? `image/${match[1]}` : `image`;
+         const ext = match ? match[1] : 'jpeg';
+         const customImageName = `${user_id}_${userName}.${ext}`;
+
+         // Append the image file data to the FormData
+         formData.append('image', {
+            uri,
+            name: customImageName,
+            type,
+         } as any); // Use 'as any' to bypass potential TS errors
+      }
+
+      formData.append('user_id', user_id);
+      formData.append('full_name', fullName);
+      formData.append('phone', phone);
+
+      const url = 'http://192.168.1.7:5001/api/user/update-profile';
+      const config = {
+         headers: {
+            'Content-Type': 'multipart/form-data',
+         }
       };
-      console.log(formdata);
+
       axios
-         .post('http://192.168.1.7:5001/admin/update-user', formdata)
+         .post(url, formData, config)
          .then(res => {
             console.log(res.data)
-            if (res.data.status == "Ok") {
-               Toast.show({
-                  type: 'success',
-                  text1: 'User Updated',
-               });
+            if (res.data.status == "ok") {
+               router.replace('/(app)/Dashboard');
             }
-         });
-   };
+         })
+         .catch(e => console.log(e));
+   }
 
    return (
       <KeyboardAwareScrollView
-         keyboardShouldPersistTaps="always"
-         showsVerticalScrollIndicator={false}>
+         style={[cstyles.scrollViewContainer, { backgroundColor: '#fff' }]}
+         contentContainerStyle={cstyles.contentContainer}
+         keyboardShouldPersistTaps="handled"
+         showsVerticalScrollIndicator={false}
+         enableOnAndroid={true}
+      >
 
-         <View>
-            <View style={styles.header}>
-               <View style={{ flex: 1 }}>
-                  <Back name="arrow-back" size={30} style={styles.backIcon} />
+         <View style={cstyles.pageContainer}>
+            <View style={styles.profileHeader}>
+               <View style={{ flex: 1, paddingLeft: 5 }}>
+                  <Back name="arrow-back" size={30} style={[styles.backIcon, { paddingLeft: 7, paddingTop: 7 }]} onPress={() => router.back()} />
                </View>
                <View style={{ flex: 3 }}>
                   <Text style={styles.nameText}>Edit Profile</Text>
@@ -82,7 +139,70 @@ const UserProfile = () => {
                </TouchableOpacity>
             </View>
 
+            <View style={{ marginTop: 20 }}>
+               <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '500', letterSpacing: 1 }}>{userInfo?.fullName}</Text>
+               <Text style={{ textAlign: 'center', fontSize: 16, color: 'gray' }}>@{userInfo?.fullName.replaceAll(' ', '').toLowerCase()}</Text>
+            </View>
+
+            <View style={{ height: 30 }}></View>
+
+            <View style={cstyles.line}></View>
+
+            <View style={{ height: 30 }}></View>
+
+            <View style={cstyles.formContainer}>
+
+               <View style={styles.inputContainer}>
+                  <Text style={{ color: 'gray', marginLeft: 8 }}>Full Name</Text>
+                  <TextInput
+                     defaultValue={userInfo?.fullName}
+                     style={styles.IC_TextInput}
+                  />
+               </View>
+
+               <View style={styles.inputContainer}>
+                  <Text style={{ color: 'gray', marginLeft: 8 }}>Email Address</Text>
+                  <TextInput
+                     defaultValue={userInfo?.email}
+                     style={styles.IC_TextInput}
+                  />
+               </View>
+
+               <View style={styles.inputContainer}>
+                  <Text style={{ color: 'gray', marginLeft: 8 }}>Phone Number</Text>
+                  <TextInput
+                     keyboardType='number-pad'
+                     defaultValue={userInfo?.phone}
+                     style={styles.IC_TextInput}
+                  />
+               </View>
+
+               <View style={styles.inputContainer}>
+                  <Text style={{ color: 'gray', marginLeft: 8 }}>User Name</Text>
+                  <TextInput
+                     defaultValue={userInfo?.username}
+                     style={styles.IC_TextInput}
+                  />
+               </View>
+
+            </View>
+            {/* form container - ends */}
+
+            <View style={cstyles.buttonContainer}>
+
+               <TouchableOpacity style={[cstyles.button, { borderRadius: 15, backgroundColor: '#201f1fff' }]} onPress={() => handelProfileUpdate()}>
+                  <View>
+                     <Text style={cstyles.buttonText}>SAVE</Text>
+                  </View>
+               </TouchableOpacity>
+
+            </View>
+            {/* button container - ends */}
+
          </View>
+         {/* page container - ends */}
+
+         <View style={{ height: 100 }}></View>
 
       </KeyboardAwareScrollView>
    )

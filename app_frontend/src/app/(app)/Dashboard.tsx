@@ -18,12 +18,17 @@ const Dashboard = () => {
    const router = useRouter();
 
    function handleSettings() {
-      router.push('/(app)/UserProfile');
+      router.push({
+         pathname: '/(app)/UserProfile',
+         params: {
+            userInfo: JSON.stringify(userInfo)
+         }
+      })
    }
 
    function handleUsers() {
       router.push('/(app)/UserProfile');
-    }
+   }
 
    const handleBackPress = () => {
       Alert.alert('Exit App', 'Are you sure you want to exit?', [
@@ -66,14 +71,14 @@ const Dashboard = () => {
                <View style={{ height: 35 }}>
                </View>
 
-               <View style={[styles.header, {justifyContent: 'space-between', flexDirection: 'row'}]}>   
+               <View style={[styles.header, { justifyContent: 'space-between', flexDirection: 'row' }]}>
                   <View>
                      <Text style={{ color: 'gray', fontSize: 12, marginBottom: 0, }}>WELCOME BACK</Text>
                      <Text style={[styles.headerText, { fontSize: 22, fontWeight: '600', }]}>{userInfo?.fullName}</Text>
                   </View>
                   <View>
                      <TouchableOpacity onPress={() => handleSettings()}>
-                        <Text style={{backgroundColor: 'gray', padding: 15, borderRadius: 50, color: '#fff', letterSpacing: 4, fontWeight: 'bold'}}>{userInfo?.fullName.slice(0, 2).toUpperCase()}</Text>
+                        <Text style={{ backgroundColor: 'gray', padding: 15, borderRadius: 50, color: '#fff', letterSpacing: 4, fontWeight: 'bold' }}>{userInfo?.fullName.slice(0, 2).toUpperCase()}</Text>
                      </TouchableOpacity>
                   </View>
                </View>

@@ -69,3 +69,26 @@ https://www.google.com/search?q=node+js+express+crud+example+with+mysql+in+types
 
 *** work on git branch from main
 https://www.google.com/search?q=work+on+git+branch+from+main&client=ubuntu-sn&sca_esv=d2d5b0c2270b4c11&channel=fs&biw=1550&bih=803&sxsrf=ANbL-n58pm4BvKHcHRcDlmCZ7uDatI51aQ%3A1772436234688&ei=CjulafbkKeecseMPpPrS0Ag&ved=0ahUKEwj2kZ_B14CTAxVnTmwGHSS9FIoQ4dUDCBE&uact=5&oq=work+on+git+branch+from+main&gs_lp=Egxnd3Mtd2l6LXNlcnAiHHdvcmsgb24gZ2l0IGJyYW5jaCBmcm9tIG1haW4yBRAhGKABMgUQIRifBTIFECEYnwVItWNQ-xJYh2FwC3gBkAEAmAGxAaAB_x6qAQQwLjMyuAEDyAEA-AEBmAIroAKiJsICChAAGLADGNYEGEfCAhMQLhiABBiwAxjRAxhDGMcBGIoFwgINEAAYgAQYsAMYQxiKBcICChAAGIAEGEMYigXCAggQABiABBixA8ICBRAAGIAEwgIREC4YgAQYsQMY0QMYgwEYxwHCAhQQLhiABBixAxjRAxiDARjHARiKBcICDhAAGIAEGLEDGIMBGIoFwgILEAAYgAQYkQIYigXCAhAQLhiABBixAxhDGIMBGIoFwgILEAAYgAQYsQMYgwHCAgsQLhiABBixAxiDAcICDRAAGIAEGLEDGEMYigXCAhYQLhiABBixAxjRAxhDGIMBGMcBGIoFwgILEAAYgAQYsQMYyQPCAggQABiABBiSA8ICEBAAGIAEGLEDGIMBGIoFGArCAgsQLhiABBjHARivAcICBxAAGIAEGArCAgYQABgWGB7CAggQABiABBiiBMICBRAAGO8FwgIEECEYFZgDAIgGAZAGCpIHBTExLjMyoAeQvgGyBwQwLjMyuAefJMIHCTItNi4yNS4xMsgHhwWACAA&sclient=gws-wiz-serp
+
+
+*** getting error on gradle clean in react native app
+https://www.google.com/search?q=getting+error+on+gradle+clean+in+react+native+app&sca_esv=246d97976218a45f&ei=0CSxaeD5EeGu4-EPgPy7wA8&biw=1488&bih=769&ved=0ahUKEwjgoe3_s5eTAxVh1zgGHQD-DvgQ4dUDCBE&uact=5&oq=getting+error+on+gradle+clean+in+react+native+app&gs_lp=Egxnd3Mtd2l6LXNlcnAiMWdldHRpbmcgZXJyb3Igb24gZ3JhZGxlIGNsZWFuIGluIHJlYWN0IG5hdGl2ZSBhcHAyBRAhGKABMgUQIRifBUjbqwFQ5ERY_acBcA94AZABApgB4wOgAYQ4qgEKMC40OS4xLjAuMbgBA8gBAPgBAZgCQKACrDzCAgoQABiwAxjWBBhHwgILEAAYgAQYkQIYigXCAgsQABiABBixAxiDAcICERAuGIAEGLEDGNEDGIMBGMcBwgIWEC4YgAQYsQMY0QMYQxiDARjHARiKBcICChAAGIAEGEMYigXCAggQABiABBixA8ICCBAuGIAEGLEDwgIOEC4YgAQYsQMY0QMYxwHCAhAQABiABBixAxhDGIMBGIoFwgILEAAYgAQYsQMYigXCAgUQABiABMICCxAuGIAEGLEDGIoFwgIFEC4YgATCAh0QLhiABBixAxjRAxjHARiXBRjcBBjeBBjgBNgBAcICFxAuGIAEGLEDGJcFGNwEGN4EGOAE2AEBwgIGEAAYFhgewgILEAAYgAQYhgMYigXCAggQABiiBBiJBcICBRAAGO8FwgIEECEYFZgDAIgGAZAGCLoGBggBEAEYFJIHBzE1LjQ4LjGgB4_OA7IHBjAuNDguMbgHhDrCBwkyLTcuMzMuMjTIB9sIgAgA&sclient=gws-wiz-serp
+
+cd android
+./gradlew --stop
+cd ..
+Stop the Metro bundler if it's running (usually in another terminal window).
+Manually Delete Build Folders
+Navigate to your project's android/app/ directory and delete the build folder.
+Navigate to the android/ directory and delete the global build folder if it exists.
+For some specific errors related to native modules like react-native-reanimated, you may also need to delete the .cxx folder in android/app/.
+Clean System-Level Gradle Caches: Corrupted caches in your user directory can cause issues.
+Remove the global Gradle cache folder: rm -rf ~/.gradle/caches
+After deletion, running the app again will force Gradle to redownload necessary dependencies.
+rm -rf node_modules package-lock.json
+cd android && rm -rf build/ .gradle/ app/build/ app/.cxx/ 
+cd ..
+rm -rf ~/.gradle/caches
+npm install
+cd android && ./gradlew clean
+cd .. && npx react-native run-android --reset-cache

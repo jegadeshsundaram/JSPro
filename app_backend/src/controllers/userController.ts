@@ -8,16 +8,23 @@ import { RowDataPacket } from 'mysql2/promise'
 import bcrypt from 'bcryptjs'
 import generateToken from '../utils/generateToken.js'
 import sendMail from '../utils/mailer.js'
-
+import path from 'path'
+import Client from 'ssh2-sftp-client';
 
 const loginUser = asyncHandler(async (req: Request<{}, {}, LoginBody>, res: Response): Promise<void> => {
+
+   logger.info(`>>> Request to login api...`);
+
    const { email, password } = req.body
+
+   logger.info(`Request Body ${email}, ${password}`);
 
    // check if email exists in db
    const user = await getUser(email);
 
    if (!user) {
       res.status(404)
+      logger.info(`User not exists`);
       throw new Error('User not exists')
    }
 
@@ -142,7 +149,7 @@ const pwdUpdate = asyncHandler(async (req: Request, res: Response) => {
 
    const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM users WHERE reset_password_code = ?', [code]);
    if (rows.length > 0) {
-      
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const [results] = await db.query(
@@ -155,14 +162,67 @@ const pwdUpdate = asyncHandler(async (req: Request, res: Response) => {
 
       logger.info(`Updated ${typedResult.affectedRows} record(s)`);
 
-      if(typedResult.affectedRows > 0) {
+      if (typedResult.affectedRows > 0) {
          res.json({ status: 'ok', message: 'Password Updated' });
       }
-      
+
    } else {
       res.json({ status: 'code_not_exist', message: 'Code Not Exists' });
    }
 });
 
 
-export { registerUser, loginUser, pwdEmail, pwdUpdate }
+const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
+
+   const sftp = new Client();
+
+   logger.info(`Profile Update >>>> Start`);   
+
+
+   if (!req.file) {
+      logger.info(`No file uploaded!`);
+      res.status(400).json({ message: 'No file uploaded!' });
+      return;
+   }
+
+   logger.info("File is available ***");
+
+   // Target path on GoDaddy server
+   const remoteFilePath = `/home/bywm9tx37k52/public_html/uploads/${req.file.originalname}`;
+
+   logger.info(`remoteFilePath >>>> ${remoteFilePath}`);
+
+   try {
+      await sftp.connect({
+         host: "198.12.237.45",
+         port: 22,
+         username: "bywm9tx37k52",
+         password: "Thamayanthy0!*",
+      });
+      await sftp.put(req.file.buffer, remoteFilePath);
+      await sftp.end();
+      res.send('File uploaded to GoDaddy successfully.');
+
+      // const [results] = await db.query(
+      //    "UPDATE users SET full_name = ?, phone = ? WHERE user_id = ?",
+      //    [full_name, phone, user_id]
+      // );
+
+      // // Cast the result to ResultSetHeader
+      // const typedResult = results as ResultSetHeader;
+
+      // logger.info(`Updated ${typedResult.affectedRows} record(s)`);
+
+      // if (typedResult.affectedRows > 0) {
+      //    res.json({ status: 'ok', message: 'Profile Updated' });
+      // }
+   } catch (err) {
+      console.error(err);
+      logger.info(`Image Upload Error >>>> ${err}`);
+      res.status(500).send('SFTP upload failed.');
+   }
+
+});
+
+
+export { registerUser, loginUser, pwdEmail, pwdUpdate, profileUpdate }
