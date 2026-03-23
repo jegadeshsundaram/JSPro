@@ -2,4 +2,7 @@
 **/dist/
 **/logs/
 package-lock.json
+.env
+**/android
+**/ios
 
