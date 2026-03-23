@@ -1,10 +1,11 @@
-import { userLogin } from '@/src/features/auth/authActions';
+import { userLogin, } from '@/src/features/auth/authActions';
+import { clearError } from '@/src/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '@/src/features/hooks';
-import { Feather, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { TextInput } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import styles from '../style/auth';
 
@@ -17,17 +18,12 @@ export default function Login() {
    const { userInfo, error } = useAppSelector((state) => state.auth)
    const dispatch = useAppDispatch()
 
-   function handelSubmit() {
+   function handleLogin() {
 
       // Dismiss the keyboard
-      Keyboard.dismiss();
+      Keyboard.dismiss();      
 
-      console.log(">>>" + email, password);
-
-      const loginData = {
-         email: email.replace(/\s/g, ''),
-         password,
-      }
+      setEmail(email.replace(/\s/g, ''))
 
       if (email !== "" && password !== "") {
 
@@ -46,10 +42,15 @@ export default function Login() {
    }
 
    useEffect(() => {
+
+      if (error) {
+         Alert.alert('Login Failed', error, [{ text: 'OK', onPress: () => dispatch(clearError()) }]); //
+      }
+
       if (userInfo) {
          route.push('/(app)/Dashboard')
       }
-   }, [route, userInfo])
+   }, [error, dispatch, route, userInfo])
 
    return (
 
@@ -69,64 +70,41 @@ export default function Login() {
                <Text style={styles.headerTextInfo}>
                   Enter your email and password to securely access your account and mange your services.
                </Text>
-            </View>
-
-            <View style={{ height: 30 }}>
-
-               <Text>{error}</Text>
-
-            </View>
+            </View>            
 
             <View style={styles.formContainer}>
 
                {/* Field :: Email Address */}
-               <View style={[styles.action, { paddingHorizontal: 18 }]}>
-                  <MaterialIcons
-                     name="email"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 12, fontSize: 24 }]}
-                  />
-
+               <View>
                   <TextInput
-                     placeholder="Email Address"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
+                     label="Email Address"
+                     left={<TextInput.Icon icon="email" />}
                      onChange={e => setEmail(e.nativeEvent.text)}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
                </View>
 
-               {/* Field :: Password */}
-               <View style={styles.action}>
-                  <FontAwesome6
-                     name="lock"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 17, fontSize: 20 }]}
-                  />
+               <View style={{ height: 30 }}></View>
 
+               <View>
                   <TextInput
-                     placeholder="Password"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     secureTextEntry={showPassword}
+                     label="Password"
+                     left={<TextInput.Icon icon="lock" />}
                      onChange={e => setPassword(e.nativeEvent.text)}
+                     secureTextEntry={showPassword}
+                     right={
+                        <TextInput.Icon
+                           // Use the 'icon' prop in v5.x and later
+                           icon={showPassword ? "eye-off" : "eye"}
+                           onPress={() => setShowPassword(!showPassword)}
+                           // Prevents the keyboard from dismissing on icon press
+                           forceTextInputFocus={false}
+                        />
+                     }
+                     textContentType={'password'}
+                     autoComplete={'password'}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
-
-                  <TouchableOpacity style={styles.pwdIcon} onPress={() => setShowPassword(!showPassword)}>
-                     {password.length < 1 ? null : !showPassword ? (
-                        <Feather
-                           name="eye-off"
-                           size={24}
-                           color={'dimgray'}
-                        />
-                     ) : (
-                        <Feather
-                           name="eye"
-                           size={24}
-                           color={'dimgray'}
-                        />
-                     )}
-                  </TouchableOpacity>
-
                </View>
 
                <TouchableOpacity
@@ -139,14 +117,14 @@ export default function Login() {
 
             <View style={styles.buttonContainer}>
 
-               <TouchableOpacity style={styles.button} onPress={() => handelSubmit()}>
+               <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
                   <View>
-                     <Text style={styles.buttonText}>Login</Text>
+                     <Text style={styles.buttonText}>Log In</Text>
                   </View>
                </TouchableOpacity>
 
                <TouchableOpacity
-                  onPress={() => { Toast.hide(); route.push('/(auth)/Signup') }}>
+                  onPress={() => { Toast.hide(); route.navigate('/(auth)/Signup') }}>
                   <Text style={styles.linkText}>Don't have an account? <Text style={styles.link}>Sign Up here</Text></Text>
                </TouchableOpacity>
             </View>

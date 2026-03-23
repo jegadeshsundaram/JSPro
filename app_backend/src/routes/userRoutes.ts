@@ -1,9 +1,6 @@
 import express from 'express';
 import * as userController from '../controllers/userController.js'
-//import upload from '../middleware/multer.middleware.js';
 import multer from 'multer';
-import logger from '../config/logger.js'
-import Client from 'ssh2-sftp-client';
 
 const router = express.Router();
 

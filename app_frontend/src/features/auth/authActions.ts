@@ -50,7 +50,7 @@ export const userLogin = createAsyncThunk<User, LoginCredentials, { rejectValue:
 
 export const registerUser = createAsyncThunk<void, RegisterCredentials, { rejectValue: string }>(
    'auth/register',
-   async ({ fullName, email, password }, { rejectWithValue }) => {
+   async ({ fullName, email, username, password }, { rejectWithValue }) => {
 
       try {
 
@@ -62,7 +62,7 @@ export const registerUser = createAsyncThunk<void, RegisterCredentials, { reject
 
          const response = await axios.post(
             `${backendURL}/api/user/register`,
-            { fullName, email, password },
+            { fullName, email, username, password },
             config
          )
 

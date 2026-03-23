@@ -45,7 +45,7 @@ export default StyleSheet.create({
    },
    avatar: {
       borderRadius: 80,
-      marginTop: 50,
+      marginTop: 20,
       backgroundColor: 'white',
       height: 160,
       width: 160,
@@ -123,7 +123,7 @@ export default StyleSheet.create({
       borderWidth: 1,
       borderColor: '#c8cbcfff',
       paddingTop: 10,
-      paddingLeft: 10,
+      paddingLeft: 15,
       paddingRight: 10,
       borderRadius: 20,
       marginBottom: 22
@@ -133,6 +133,11 @@ export default StyleSheet.create({
       borderWidth: 1,
       borderColor: '#fff',
       fontSize: 16,
-      fontWeight: '500'
+      fontWeight: '500',
+      marginLeft: 2,
+   },
+   IC_label: {
+      color: 'gray', 
+      marginLeft: 8
    }
 });

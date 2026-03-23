@@ -37,6 +37,9 @@ const loginUser = asyncHandler(async (req: Request<{}, {}, LoginBody>, res: Resp
          _id: user.user_id,
          fullName: user.full_name,
          email: user.email,
+         phone: user.phone,
+         username: user.username,
+         profilePic: user.profile_pic,
          userToken: generateToken(user.user_id.toString()),
       })
 
@@ -175,51 +178,61 @@ const pwdUpdate = asyncHandler(async (req: Request, res: Response) => {
 const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
 
    const sftp = new Client();
+   let profile_pic = null;
 
-   logger.info(`Profile Update >>>> Start`);   
-
+   logger.info(`Profile Update >>>> Start`);
 
    if (!req.file) {
-      logger.info(`No file uploaded!`);
-      res.status(400).json({ message: 'No file uploaded!' });
-      return;
+      logger.info(`No image to be uploaded and ONLY user data update!`);
+   } else {
+      
+      try {
+
+         logger.info("There is Image to be uploaded with user data update!");
+
+         // Target path on GoDaddy server
+         const remoteFilePath = `/home/bywm9tx37k52/public_html/uploads/${req.file.originalname}`;
+
+         logger.info(`remoteFilePath >>>> ${remoteFilePath}`);
+
+         await sftp.connect({
+            host: "198.12.237.45",
+            port: 22,
+            username: "bywm9tx37k52",
+            password: "Thamayanthy0!*",
+         });
+         await sftp.put(req.file.buffer, remoteFilePath);
+         await sftp.end();
+
+         profile_pic = req.file.originalname;
+
+         logger.info(`1 >>>> ${profile_pic}`);
+         
+      } catch (err) {
+         console.error(err);
+         logger.info(`Image Upload Error >>>> ${err}`);
+         res.status(500).send('SFTP upload failed.');
+      }
    }
 
-   logger.info("File is available ***");
+   logger.info(`2 >>>> ${profile_pic}`);
 
-   // Target path on GoDaddy server
-   const remoteFilePath = `/home/bywm9tx37k52/public_html/uploads/${req.file.originalname}`;
+   const { user_id, full_name, phone, username, email } = req.body;
 
-   logger.info(`remoteFilePath >>>> ${remoteFilePath}`);
+   const [results] = await db.query(
+      "UPDATE users SET full_name = ?, phone = ?, username = ?, profile_pic = ? WHERE user_id = ? and email = ?",
+      [full_name, phone, username, profile_pic, user_id, email]
+   );
 
-   try {
-      await sftp.connect({
-         host: "198.12.237.45",
-         port: 22,
-         username: "bywm9tx37k52",
-         password: "Thamayanthy0!*",
-      });
-      await sftp.put(req.file.buffer, remoteFilePath);
-      await sftp.end();
-      res.send('File uploaded to GoDaddy successfully.');
+   // Cast the result to ResultSetHeader
+   const typedResult = results as ResultSetHeader;
 
-      // const [results] = await db.query(
-      //    "UPDATE users SET full_name = ?, phone = ? WHERE user_id = ?",
-      //    [full_name, phone, user_id]
-      // );
+   logger.info(`Updated ${typedResult.affectedRows} record(s)`);
 
-      // // Cast the result to ResultSetHeader
-      // const typedResult = results as ResultSetHeader;
-
-      // logger.info(`Updated ${typedResult.affectedRows} record(s)`);
-
-      // if (typedResult.affectedRows > 0) {
-      //    res.json({ status: 'ok', message: 'Profile Updated' });
-      // }
-   } catch (err) {
-      console.error(err);
-      logger.info(`Image Upload Error >>>> ${err}`);
-      res.status(500).send('SFTP upload failed.');
+   if (typedResult.affectedRows > 0) {
+      res.json({ status: 'ok', message: 'Profile Updated' });
+   } else {
+      res.json({ status: 'error', message: 'Error or No update' });
    }
 
 });

@@ -1,10 +1,11 @@
 import { registerUser } from '@/src/features/auth/authActions';
+import { clearError, clearSuccess } from '@/src/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '@/src/features/hooks';
-import { Feather, FontAwesome, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { TextInput } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import styles from '../style/auth';
 
@@ -15,6 +16,9 @@ export default function Signup() {
 
    const [fullName, setFullName] = useState('');
    const [fullNameVerify, setFullNameVerify] = useState(false);
+
+   const [username, setUsername] = useState('');
+   const [usernameVerify, setUsernameVerify] = useState(false);
 
    const [email, setEmail] = useState('');
    const [emailVerify, setEmailVerify] = useState(false);
@@ -28,22 +32,29 @@ export default function Signup() {
    const [showConfirmPassword, setShowConfirmPassword] = useState(true);
 
 
-   const { loading, userInfo, error, success } = useAppSelector((state) => state.auth)
+   const { loading, error, success } = useAppSelector((state) => state.auth)
    const dispatch = useAppDispatch()
 
    useEffect(() => {
+
+      console.log(">>>>>"+success);
+
+      if (error) {
+         Alert.alert('Signup Failed', error, [{ text: 'OK', onPress: () => dispatch(clearError()) }]); //
+      }
 
       if (success) {
          Toast.show({
                type: 'success',
                text1: 'User Registered',
          });
-         // redirect user to login page if registration was successful
+         dispatch(clearSuccess())
+         // redirect user to login page if registration was successful         
          route.push('/Login')
       }
-   }, [route, userInfo, success])
-   
-   function handleSubmit() {
+   }, [route, error, dispatch, success])
+
+   function handleSignup() {
 
       // Dismiss the keyboard
       Keyboard.dismiss();
@@ -54,32 +65,38 @@ export default function Signup() {
          Toast.show({
             type: 'error',
             text1: 'Required!',
-            text2: 'Name, Email & Password',
+            text2: 'Full Name, Email & Password',
             visibilityTime: 4000
          });
       }
 
       if (fullNameVerify && emailVerify && passwordVerify && confirmPasswordVerify) {
-         dispatch(registerUser({ fullName, email, password }))
-      }      
-   }   
+         dispatch(registerUser({ fullName, email, username, password }))
+      }
+   }
 
-   const handleFullName = (e: any) => {
-      const fullNameVal = e.nativeEvent.text;
-
-      setFullName(fullNameVal);
+   const handleFullName = (value: any) => {
+      setFullName(value);
       setFullNameVerify(false);
 
-      if (fullNameVal.length > 0) {
+      if (value.length > 3) {
          setFullNameVerify(true);
       }
    }
 
-   const handleEmail = (e: any) => {
-      const emailVal = e.nativeEvent.text;
-      setEmail(emailVal);
+   const handleUsername = (value: any) => {
+      setUsername(value);
+      setUsernameVerify(false);
+
+      if (value.length > 5) {
+         setUsernameVerify(true);
+      }
+   }
+
+   const handleEmail = (value: any) => {      
+      setEmail(value);
       setEmailVerify(false);
-      if (/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(emailVal)) {
+      if (/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(value)) {
          setEmailVerify(true);
       }
    }
@@ -130,19 +147,13 @@ export default function Signup() {
             <View style={styles.formContainer}>
 
                {/* Field :: Full Name */}
-               <View style={styles.action}>
-                  <FontAwesome
-                     name="user"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 14, fontSize: 24 }]}
-                  />
+               <View>
                   <TextInput
-                     placeholder="Full Name"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     onChange={e => handleFullName(e)}
+                     label="Full Name"
+                     left={<TextInput.Icon icon="text-account" />}
+                     onChangeText={handleFullName}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
-
                </View>
 
                {fullName.length < 1 ? null : fullNameVerify ? null : (
@@ -152,30 +163,45 @@ export default function Signup() {
                            marginLeft: 20,
                            color: 'red',
                         }}>
-                        Full Name: Required, Min 1 Characters
+                        Full Name: Required, Min 4 Characters
                      </Text>
                   </View>
                )}
 
-               {/* Field :: Email Address */}
-               <View style={[styles.action, {paddingHorizontal: 18}]}>
-                  <MaterialIcons
-                     name="email"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 10, fontSize: 24 }]}
-                  />
+               <View style={{ height: 30 }}></View>
+
+               <View>
                   <TextInput
-                     placeholder="Email Address"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     autoCapitalize='none'
-                     autoCorrect={false}
-                     autoComplete='email'
-                     onChange={e => handleEmail(e)}
+                     label="Username"
+                     left={<TextInput.Icon icon="account" />}
+                     onChangeText={handleUsername}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
                </View>
 
-               {email.length < 1 ? null : emailVerify ? null : (
+               {username.length < 1 ? null : usernameVerify ? null : (
+                  <View>
+                     <Text
+                        style={{
+                           marginLeft: 20,
+                           color: 'red',
+                        }}>
+                        Username: Required, Min 6 Characters
+                     </Text>
+                  </View>
+               )}
+
+               <View style={{ height: 30 }}></View>
+
+               <View>
+                  <TextInput
+                     label="Email Address"
+                     left={<TextInput.Icon icon="email" />}
+                     onChangeText={handleEmail}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
+                  />
+               </View>
+                {email.length < 1 ? null : emailVerify ? null : (
                   <Text
                      style={{
                         marginLeft: 20,
@@ -185,84 +211,63 @@ export default function Signup() {
                   </Text>
                )}
 
-               {/* Field :: Password */}
-               <View style={styles.action}>
-                  <FontAwesome6
-                     name="lock"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 17, fontSize: 20 }]}
-                  />
+               <View style={{ height: 30 }}></View>
 
+               {/* Field :: Password */}
+               <View>
                   <TextInput
-                     placeholder="Password"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     value={password}
+                     label="Password"
+                     left={<TextInput.Icon icon="lock" />}
                      onChangeText={handlePassword}
                      secureTextEntry={showPassword}
+                     right={
+                        <TextInput.Icon
+                           // Use the 'icon' prop in v5.x and later
+                           icon={showPassword ? "eye-off" : "eye"}
+                           onPress={() => setShowPassword(!showPassword)}
+                           // Prevents the keyboard from dismissing on icon press
+                           forceTextInputFocus={false}
+                        />
+                     }
+                     textContentType={'password'}
+                     autoComplete={'password'}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
-
-                  <TouchableOpacity style={styles.pwdIcon} onPress={() => setShowPassword(!showPassword)}>
-                     {password.length < 1 ? null : !showPassword ? (
-                        <Feather
-                           name="eye-off"
-                           size={24}
-                           color={'dimgray'}                           
-                        />
-                     ) : (
-                        <Feather
-                           name="eye"
-                           size={24}
-                           color={'dimgray'}                           
-                        />
-                     )}
-                  </TouchableOpacity>
                </View>
-
+               
                {password.length < 1 ? null : passwordVerify ? null : (
                   <Text
                      style={{
                         marginLeft: 20,
                         color: 'red',
                      }}>
-                     Password: Min 6 Characters
+                     Password: Min 6 characters/digits
                   </Text>
                )}
 
+               <View style={{ height: 30 }}></View>
+
                {/* Field :: Confirm Password */}
-               <View style={styles.action}>
-                  <FontAwesome6
-                     name="lock"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 17, fontSize: 20 }]}
-                  />
-
+               <View>
                   <TextInput
-                     placeholder="Confirm Password"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     value={confirmPassword}
+                     label="Confirm Password"
+                     left={<TextInput.Icon icon="lock" />}
                      onChangeText={handleConfirmPassword}
-                     secureTextEntry={showConfirmPassword}
+                     secureTextEntry={showPassword}
+                     right={
+                        <TextInput.Icon
+                           // Use the 'icon' prop in v5.x and later
+                           icon={showPassword ? "eye-off" : "eye"}
+                           onPress={() => setShowPassword(!showPassword)}
+                           // Prevents the keyboard from dismissing on icon press
+                           forceTextInputFocus={false}
+                        />
+                     }
+                     textContentType={'password'}
+                     autoComplete={'password'}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
-
-                  <TouchableOpacity style={styles.pwdIcon} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                     {confirmPassword.length < 1 ? null : !showConfirmPassword ? (
-                        <Feather
-                           name="eye-off"
-                           size={24}
-                           color={'dimgray'}
-                        />
-                     ) : (
-                        <Feather
-                           name="eye"
-                           size={24}
-                           color={'dimgray'}
-                        />
-                     )}
-                  </TouchableOpacity>
                </View>
-
                {confirmPassword.length < 1 ? null : confirmPasswordVerify ? null : (
                   <Text
                      style={{
@@ -275,8 +280,10 @@ export default function Signup() {
 
             </View>
 
+            <View style={{ height: 20 }}></View>
+
             <View style={styles.buttonContainer}>
-               <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
+               <TouchableOpacity style={styles.button} onPress={() => handleSignup()}>
                   <View>
                      <Text style={styles.buttonText}>{loading ? <Spinner /> : 'Signup'}</Text>
                   </View>
@@ -284,7 +291,7 @@ export default function Signup() {
 
                <TouchableOpacity onPress={() => route.push('/(auth)/Login')}>
                   <View>
-                     <Text style={{ marginTop: 30, fontSize: 16, color: '#404143', fontWeight: '500', letterSpacing: .5 }}>Back to Login</Text>
+                     <Text style={[styles.linkText, { color: '#44990bff' }]}>Back to Login</Text>
                   </View>
                </TouchableOpacity>
             </View>

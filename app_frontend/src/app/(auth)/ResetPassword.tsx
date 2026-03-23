@@ -1,10 +1,9 @@
-import Feather from '@expo/vector-icons/Feather';
-import Error from '@expo/vector-icons/MaterialIcons';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { TextInput } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import styles from '../style/auth';
 
@@ -113,69 +112,38 @@ export default function ResetPassword() {
 
             <View style={styles.formContainer}>
 
-               <View style={styles.action}>
+               <View>
                   <TextInput
-                     placeholder="Code"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
+                     label="Code"
+                     left={<TextInput.Icon icon="email" />}
                      onChange={e => handleCode(e)}
-                     keyboardType="number-pad"
+                     keyboardType='number-pad'
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
+               </View>              
 
-                  {code.length < 1 ? null : codeVerify ? (
-                     <Feather name="check-circle" color="green" size={20} />
-                  ) : (
-                     <Error name="error-outline" color="red" size={20} />
-                  )}
-
-               </View>
-
-               {code.length < 1 ? null : codeVerify ? null : (
-                  <Text
-                     style={{
-                        marginLeft: 20,
-                        color: 'red',
-                     }}>
-                     Code: 4 Digits, No Spaces
-                  </Text>
-               )}
-
-               <View style={styles.action}>
+               {/* Field :: Password */}
+               <View>
                   <TextInput
-                     placeholder="New Password"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
+                     label="New Password"
+                     left={<TextInput.Icon icon="lock" />}
                      onChange={e => handlePassword(e)}
                      secureTextEntry={showPassword}
+                     right={
+                        <TextInput.Icon
+                           // Use the 'icon' prop in v5.x and later
+                           icon={showPassword ? "eye-off" : "eye"}
+                           onPress={() => setShowPassword(!showPassword)}
+                           // Prevents the keyboard from dismissing on icon press
+                           forceTextInputFocus={false}
+                        />
+                     }
+                     textContentType={'password'}
+                     autoComplete={'password'}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
-
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                     {password.length < 1 ? null : !showPassword ? (
-                        <Feather
-                           name="eye-off"
-                           color={passwordVerify ? 'green' : 'red'}
-                           size={23}
-                        />
-                     ) : (
-                        <Feather
-                           name="eye"
-                           color={passwordVerify ? 'green' : 'red'}
-                           size={23}
-                        />
-                     )}
-                  </TouchableOpacity>
                </View>
-
-               {password.length < 1 ? null : passwordVerify ? null : (
-                  <Text
-                     style={{
-                        marginLeft: 20,
-                        color: 'red',
-                     }}>
-                     Password: Min 6 Characters
-                  </Text>
-               )}
-
+            
             </View>
 
             <View style={styles.buttonContainer}>

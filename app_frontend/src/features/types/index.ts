@@ -4,6 +4,7 @@ export interface User {
   username: string,  
   email: string,
   phone: string,
+  profilePic: string,
   userToken?: string
 }
 
@@ -24,6 +25,7 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   fullName: string
   email: string
+  username: string
   password: string
 }
 

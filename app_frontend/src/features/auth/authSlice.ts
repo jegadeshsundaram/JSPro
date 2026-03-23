@@ -26,9 +26,35 @@ const authSlice = createSlice({
          state.userInfo = null;
          state.userToken = null;
          state.error = null;
+         state.success = false;
       },
       signup: (state, action: PayloadAction<User>) => {
          state.userInfo = action.payload
+      },
+      updateProfile: (state, action) => {
+         if (state.userInfo) {
+            if (action.payload.fullName !== undefined) {
+               state.userInfo.fullName = action.payload.fullName;
+            }
+            if (action.payload.email !== undefined) {
+               state.userInfo.email = action.payload.email;
+            }
+            if (action.payload.username !== undefined) {
+               state.userInfo.username = action.payload.username;
+            }
+            if (action.payload.phone !== undefined) {
+               state.userInfo.phone = action.payload.phone;
+            }
+            if (action.payload.profilePic !== undefined) {
+               state.userInfo.profilePic = action.payload.profilePic;
+            }
+         }
+      },
+      clearError: (state) => {
+         state.error = null; // Add a reducer to clear the error message
+      },
+      clearSuccess: (state) => {
+         state.success = false; // Add a reducer to clear the success message
       }
    },
    extraReducers: (builder) => {
@@ -50,7 +76,7 @@ const authSlice = createSlice({
          })
          .addCase(registerUser.pending, (state) => {
             state.loading = true;
-            state.error = null;
+            state.error = null;            
          })
          .addCase(registerUser.fulfilled, (state) => {
             state.loading = false;
@@ -63,5 +89,5 @@ const authSlice = createSlice({
    },
 })
 
-export const { logout, signup } = authSlice.actions
+export const { logout, signup, updateProfile, clearError, clearSuccess } = authSlice.actions
 export default authSlice.reducer;

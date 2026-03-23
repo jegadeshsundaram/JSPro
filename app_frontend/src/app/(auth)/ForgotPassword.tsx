@@ -1,9 +1,9 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { TextInput } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import styles from '../style/auth';
 
@@ -75,19 +75,13 @@ export default function forgotPassword() {
 
             <View style={styles.formContainer}>
 
-               <View style={[styles.action, { paddingHorizontal: 18 }]}>
-                  <MaterialIcons
-                     name="email"
-                     color="dimgray"
-                     style={[styles.smallIcon, { marginRight: 12, fontSize: 24 }]}
-                  />
+               {/* Field :: Email Address */}
+               <View>
                   <TextInput
-                     placeholder="Email Address"
-                     placeholderTextColor="#AFADAC"
-                     style={styles.textInput}
-                     autoCapitalize='none'
-                     autoCorrect={false}
+                     label="Email Address"
+                     left={<TextInput.Icon icon="email" />}
                      onChange={e => setEmail(e.nativeEvent.text)}
+                     style={{ height: 60, backgroundColor: '#ffffff' }}
                   />
                </View>
 

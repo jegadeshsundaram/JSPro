@@ -1,4 +1,5 @@
-import { useAppSelector } from '@/src/features/hooks';
+import { updateProfile } from '@/src/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/src/features/hooks';
 import Back from '@expo/vector-icons/Ionicons';
 import axios from 'axios';
 import * as ImagePicker from "expo-image-picker";
@@ -7,28 +8,43 @@ import { useEffect, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Avatar } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 import cstyles from '../style/common';
 import styles from '../style/profile';
 
 const UserProfile = () => {
 
+   const dispatch = useAppDispatch();
+
    const { userInfo } = useAppSelector((state) => state.auth)
 
-    useEffect(() => {      
+   const [image, setImage] = useState<string | null>(null);
+   const [fullName, setFullName] = useState('');
+   const [email, setEmail] = useState('');
+   const [username, setUsername] = useState('');
+   const [phone, setPhone] = useState<string>('');
+
+   useEffect(() => {
       if (userInfo) {
-         console.log("User updated:", userInfo._id);
+         setFullName(userInfo.fullName);
+         setEmail(userInfo.email);
+         setPhone(userInfo.phone);
+         setUsername(userInfo.username);
+
+         console.log(">>>>"+userInfo.profilePic);
+
+         if(userInfo.profilePic !== null && userInfo.profilePic !== undefined) {
+            const image_uri = "https://www.topjeg.com/uploads/";
+            setImage(image_uri+userInfo.profilePic);
+         }
+
+         console.log(">>>>"+image);
       }
-      
+
       // Perform side effects here (e.g., API calls based on state)
    }, [userInfo]);
 
    const router = useRouter();
-
-   const [image, setImage] = useState<string | null>(null);
-   const [fullName, setFullName] = useState('');
-   const [phone, setPhone] = useState('');
-
-   console.log(userInfo?.fullName);
 
    const selectPhoto = async () => {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -48,12 +64,40 @@ const UserProfile = () => {
       });
 
       if (!pickerResult.canceled) {
+         console.log(pickerResult.assets[0].uri);
          setImage(pickerResult.assets[0].uri);
       }
    };
 
 
    const handelProfileUpdate = async () => {
+
+
+      if (fullName.length === 0) {
+         Toast.show({
+            type: 'error',
+            text1: 'Full name is required',
+         });
+         return;
+      } else if (email.length === 0) {
+         Toast.show({
+            type: 'error',
+            text1: 'Email is required',
+         });
+         return;
+      } else if (!/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+         Toast.show({
+            type: 'error',
+            text1: 'Email is Invalid'
+         });
+         return;
+      } else if (username === null || username.length === 0) {
+         Toast.show({
+            type: 'error',
+            text1: 'Username is required',
+         });
+         return;
+      }
 
       // Create FormData object
       const formData = new FormData();
@@ -80,7 +124,9 @@ const UserProfile = () => {
 
       formData.append('user_id', user_id);
       formData.append('full_name', fullName);
+      formData.append('email', email);
       formData.append('phone', phone);
+      formData.append('username', username);
 
       const url = 'http://192.168.1.7:5001/api/user/update-profile';
       const config = {
@@ -94,6 +140,14 @@ const UserProfile = () => {
          .then(res => {
             console.log(res.data)
             if (res.data.status == "ok") {
+
+               dispatch(updateProfile({ fullName, email, username, phone }));
+
+               Toast.show({
+                  type: 'success',
+                  text1: 'Profile updated',
+               });
+
                router.replace('/(app)/Dashboard');
             }
          })
@@ -141,7 +195,8 @@ const UserProfile = () => {
 
             <View style={{ marginTop: 20 }}>
                <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '500', letterSpacing: 1 }}>{userInfo?.fullName}</Text>
-               <Text style={{ textAlign: 'center', fontSize: 16, color: 'gray' }}>@{userInfo?.fullName.replaceAll(' ', '').toLowerCase()}</Text>
+
+               {userInfo?.username ? (<Text style={{ textAlign: 'center', fontSize: 16, color: 'gray' }}>@{userInfo?.username.replaceAll(' ', '').toLowerCase()}</Text>) : ''}
             </View>
 
             <View style={{ height: 30 }}></View>
@@ -153,35 +208,44 @@ const UserProfile = () => {
             <View style={cstyles.formContainer}>
 
                <View style={styles.inputContainer}>
-                  <Text style={{ color: 'gray', marginLeft: 8 }}>Full Name</Text>
+                  <Text style={styles.IC_label}>Full Name</Text>
                   <TextInput
-                     defaultValue={userInfo?.fullName}
+                     value={fullName}
                      style={styles.IC_TextInput}
+                     onChangeText={setFullName}
                   />
                </View>
 
                <View style={styles.inputContainer}>
-                  <Text style={{ color: 'gray', marginLeft: 8 }}>Email Address</Text>
+                  <Text style={styles.IC_label}>Email Address</Text>
                   <TextInput
-                     defaultValue={userInfo?.email}
+                     value={email}
                      style={styles.IC_TextInput}
+                     autoCapitalize='none'
+                     autoCorrect={false}
+                     autoComplete='email'
+                     onChangeText={setEmail}
+                     editable={false}
                   />
                </View>
 
                <View style={styles.inputContainer}>
-                  <Text style={{ color: 'gray', marginLeft: 8 }}>Phone Number</Text>
+                  <Text style={styles.IC_label}>Phone Number</Text>
                   <TextInput
                      keyboardType='number-pad'
-                     defaultValue={userInfo?.phone}
                      style={styles.IC_TextInput}
+                     value={phone}
+                     onChangeText={setPhone}
                   />
                </View>
 
                <View style={styles.inputContainer}>
-                  <Text style={{ color: 'gray', marginLeft: 8 }}>User Name</Text>
+                  <Text style={styles.IC_label}>User Name (Min 6 chars, no spaces)</Text>
                   <TextInput
-                     defaultValue={userInfo?.username}
+                     value={username}
+                     autoCapitalize='none'
                      style={styles.IC_TextInput}
+                     onChangeText={setUsername}
                   />
                </View>
 

@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
 
    scrollViewContainer: {
       flex: 1,
-      backgroundColor: '#EBF6F7'
+      backgroundColor: '#ffffff'
    },
    contentContainer: {
       flexGrow: 1, // Ensures content container grows to fill the ScrollView's height
@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
    },
    button: {
       width: '100%',
-      backgroundColor: '#29AB87',
+      backgroundColor: '#201f1fff',
       alignItems: 'center',
-      paddingVertical: 15,
-      borderRadius: 25,
+      paddingVertical: 15,      
+      borderRadius: 15, 
    },
    buttonText: {
       fontSize: 18,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
       fontWeight: '500'
    },
    link: {
-      color: '#29AB87',
+      color: '#44990bff',
    }
 
 });
