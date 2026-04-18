@@ -3,6 +3,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import logger from './config/logger.js'
 import userRoutes from './routes/userRoutes.js'
+import clientRoutes from './routes/clientRoutes.js'    
+import companyRoutes from './routes/companyRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
@@ -37,6 +39,8 @@ const uploadDir = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadDir));
 
 // API routes
+app.use('/api/company', companyRoutes)
+app.use('/api/client', clientRoutes)
 app.use('/api/user', userRoutes)
 
 // Middleware

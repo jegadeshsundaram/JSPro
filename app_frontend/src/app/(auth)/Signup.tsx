@@ -142,7 +142,7 @@ export default function Signup() {
         <View style={styles.header}>
           <Text style={styles.headerText}>Create Account</Text>
           <Text style={styles.headerTextInfo}>
-            Create a new account to get started and enjoy seamless access to our
+            Create a new account for user to get started and enjoy seamless access to our
             features.
           </Text>
         </View>
@@ -263,12 +263,12 @@ export default function Signup() {
               label="Confirm Password"
               left={<TextInput.Icon icon="lock" />}
               onChangeText={handleConfirmPassword}
-              secureTextEntry={showPassword}
+              secureTextEntry={showConfirmPassword}
               right={
                 <TextInput.Icon
                   // Use the 'icon' prop in v5.x and later
-                  icon={showPassword ? "eye-off" : "eye"}
-                  onPress={() => setShowPassword(!showPassword)}
+                  icon={showConfirmPassword ? "eye-off" : "eye"}
+                  onPress={() => setShowPassword(!showConfirmPassword)}
                   // Prevents the keyboard from dismissing on icon press
                   forceTextInputFocus={false}
                 />

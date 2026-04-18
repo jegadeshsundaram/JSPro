@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     padding: 20,
+    height: '100%'
   },
   header: {
     padding: 10,
@@ -83,9 +84,16 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 15,
   },
+  button_1: {
+    width: "100%",
+    backgroundColor: "#7e0586ff",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderRadius: 15,
+  },
   buttonText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "500",
     color: "white",
     letterSpacing: 2,
   },
@@ -107,6 +115,21 @@ const styles = StyleSheet.create({
   link: {
     color: "#44990bff",
   },
+
+  footerContainer: {
+    width: '100%',
+    position: "absolute",
+    bottom: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
+    borderTopWidth: 1,
+    borderTopColor: "lightgray",
+  }
+  
 });
 
 export default styles;

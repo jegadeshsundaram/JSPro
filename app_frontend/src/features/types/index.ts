@@ -1,6 +1,7 @@
 export interface User {
   _id: string;
-  fullName: string;
+  clientName: string;
+  clientUEN:string;
   username: string;
   email: string;
   phone: string;
@@ -23,7 +24,8 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-  fullName: string;
+  client: string;
+  product: string;
   email: string;
   username: string;
   password: string;

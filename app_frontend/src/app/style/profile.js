@@ -54,14 +54,13 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  camDiv: {
+  camDiv: {    
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",
   },
   camIconDiv: {
     position: "absolute",
-    right: 142,
+    right: 12,
     zIndex: 1,
     bottom: 5,
     height: 36,
@@ -69,7 +68,7 @@ export default StyleSheet.create({
     backgroundColor: "#0163D2",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 18,
+    borderRadius: 18
   },
   cameraIcon: {
     color: "white",

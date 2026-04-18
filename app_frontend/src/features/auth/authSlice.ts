@@ -32,10 +32,7 @@ const authSlice = createSlice({
       state.userInfo = action.payload;
     },
     updateProfile: (state, action) => {
-      if (state.userInfo) {
-        if (action.payload.fullName !== undefined) {
-          state.userInfo.fullName = action.payload.fullName;
-        }
+      if (state.userInfo) {        
         if (action.payload.email !== undefined) {
           state.userInfo.email = action.payload.email;
         }

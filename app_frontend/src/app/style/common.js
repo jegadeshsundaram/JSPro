@@ -37,10 +37,23 @@ const cstyles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    backgroundColor: "#29AB87",
+    backgroundColor: "#1b6651ff",
     alignItems: "center",
-    paddingVertical: 15,
-    borderRadius: 25,
+    paddingVertical: 13,
+    borderRadius: 10,
+  },
+  buttonOutline: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#29AB87",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  buttonOutlineText: {
+    fontSize: 18,    
+    color: "#776969ff",
+    letterSpacing: 0,
   },
   buttonText: {
     fontSize: 18,
@@ -61,6 +74,10 @@ const cstyles = StyleSheet.create({
     borderBottomColor: "#edf2f8ff",
     borderBottomWidth: 4,
   },
+  input: {
+    height: 60, 
+    backgroundColor: "#ffffff"
+  }
 });
 
 export default cstyles;

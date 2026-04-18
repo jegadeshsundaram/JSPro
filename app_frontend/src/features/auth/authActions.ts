@@ -3,9 +3,8 @@ import axios, { AxiosError } from "axios";
 
 import { LoginCredentials, RegisterCredentials, User } from "../types";
 
+import AppConfig from "@/src/app/constants/AppConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const backendURL = "http://192.168.1.7:5001";
 
 interface ApiErrorResponse {
   message: string;
@@ -22,9 +21,9 @@ export const userLogin = createAsyncThunk<
         "Content-Type": "application/json",
       },
     };
-
+    
     const { data } = await axios.post<User>(
-      `${backendURL}/api/user/login`,
+      `${AppConfig.backend_url}api/user/login`,
       { email, password },
       config,
     );
@@ -55,7 +54,7 @@ export const registerUser = createAsyncThunk<
   { rejectValue: string }
 >(
   "auth/register",
-  async ({ fullName, email, username, password }, { rejectWithValue }) => {
+  async ({ client, product, email, username, password }, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
@@ -64,8 +63,8 @@ export const registerUser = createAsyncThunk<
       };
 
       const response = await axios.post(
-        `${backendURL}/api/user/register`,
-        { fullName, email, username, password },
+        `${AppConfig.backend_url}api/user/register`,
+        { client, product, email, username, password },
         config,
       );
 

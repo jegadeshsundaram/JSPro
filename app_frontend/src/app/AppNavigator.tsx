@@ -1,13 +1,24 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
+import { MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { MenuProvider } from 'react-native-popup-menu';
 import Toast, {
-   BaseToast,
-   ErrorToast,
-   ToastConfig,
+  BaseToast,
+  ErrorToast,
+  ToastConfig,
 } from "react-native-toast-message";
 import { useSelector } from "react-redux";
 import { RootState } from "../features/store";
+
+const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    onSurfaceVariant: '#000000', // Unfocused label/outline
+    onSurface: '#000000',        // Placeholder color
+  },
+};
 
 const toastConfig: ToastConfig = {
   success: (props) => (
@@ -85,17 +96,19 @@ const AppNavigator = () => {
   console.log(">>> Is User Authenticated? " + isAuthenticated);
 
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <Stack.Screen name="(app)" />
-        ) : (
-          <Stack.Screen name="(auth)" />
-        )}
-      </Stack>
-      <StatusBar style="light" />
-      <Toast config={toastConfig} />
-    </>
+    <PaperProvider theme={theme}>
+      <MenuProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          {isAuthenticated ? (
+            <Stack.Screen name="(app)" />
+          ) : (
+            <Stack.Screen name="(auth)" />
+          )}
+        </Stack>
+        <StatusBar style="light" />
+        <Toast config={toastConfig} />
+      </MenuProvider>
+    </PaperProvider>
   );
 };
 

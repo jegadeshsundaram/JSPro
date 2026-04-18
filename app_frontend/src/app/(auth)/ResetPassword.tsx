@@ -5,6 +5,7 @@ import { Keyboard, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { TextInput } from "react-native-paper";
 import Toast from "react-native-toast-message";
+import AppConfig from "../constants/AppConfig";
 import styles from "../style/auth";
 
 export default function ResetPassword() {
@@ -28,7 +29,7 @@ export default function ResetPassword() {
 
     if (code !== "" && password !== "") {
       axios
-        .post("http://192.168.1.7:5001/api/user/updatePassword", passwordData)
+        .post(AppConfig.backend_url+"api/user/resetPassword", passwordData)
         .then((res) => {
           console.log(res.data);
           if (res.data.status == "ok") {

@@ -28,19 +28,22 @@ const loginUser = asyncHandler(async (req: Request<{}, {}, LoginBody>, res: Resp
       throw new Error('User not exists')
    }
 
-   logger.info(">>>> Full Name for Generating Token", user.full_name);
-
    // return user obj if their password matches
    if (user && (await bcrypt.compare(password, user.password))) {
+
       logger.info(`${email} signed in at ${new Date().toISOString()}`)
+
+      const [clientRecord] = await db.execute<RowDataPacket[]>('SELECT * FROM authorized_clients WHERE uen = ?', [user.client_uen]);
+
       res.status(201).json({
          _id: user.user_id,
-         fullName: user.full_name,
+         clientName: clientRecord[0].name,
+         clientUEN: clientRecord[0].uen,
          email: user.email,
          phone: user.phone,
          username: user.username,
          profilePic: user.profile_pic,
-         userToken: generateToken(user.user_id.toString()),
+         userToken: generateToken(user.email.toString()),
       })
 
    } else {
@@ -51,7 +54,7 @@ const loginUser = asyncHandler(async (req: Request<{}, {}, LoginBody>, res: Resp
 
 const registerUser = asyncHandler(async (req: Request<{}, {}, RegisterBody>, res: Response): Promise<void> => {
 
-   const { fullName, email, password } = req.body;
+   const { client, product, username, email, password } = req.body;
 
    // check if email exists in db
    const userExists = await getUser(email);
@@ -63,13 +66,13 @@ const registerUser = asyncHandler(async (req: Request<{}, {}, RegisterBody>, res
 
    // create new user document in db
    const hashedPassword = await bcrypt.hash(password, 10);
+   const [result] = await db.query('INSERT INTO users (username, email, password, client_uen, product) VALUES (?, ?, ?, ?, ?)', [username, email, hashedPassword, client, product]);
+   logger.info(`${email} registered at ${new Date().toISOString()}`);
 
-   const [result] = await db.query('INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)', [fullName, email, hashedPassword]);
-
-   logger.info(`${email} registered at ${new Date().toISOString()}`)
+   // send status in api return call
    res.status(201).json({
       _id: (result as any).insertId,
-      fullName: fullName,
+      username: username,
       email: email,
    })
 
@@ -83,7 +86,6 @@ async function getUser(email: string) {
       // 'rows' is an array containing the results of the query.
       if (rows.length > 0) {
          logger.info(`Found ${rows.length} users.`);
-         logger.info(`Full Name ${rows[0].full_name} users.`);
          return rows[0]; // Return the first matching user object
       } else {
          return null; // No user found with the given ID
@@ -105,6 +107,8 @@ const pwdEmail = asyncHandler(async (req: Request, res: Response) => {
       res.json({ status: "email_not_exists", message: 'Email not found' });
    }
 
+   const [client] = await db.execute<RowDataPacket[]>('SELECT * FROM authorized_clients WHERE uen = ?', [user!.client_uen]);
+
    const resetPasswordCode = await getResetPassowordCode();
    await updateResetPasswordCode(email, resetPasswordCode);
 
@@ -112,7 +116,7 @@ const pwdEmail = asyncHandler(async (req: Request, res: Response) => {
       email: email,
       subject: 'Reset Password',
       template: 'password.ejs',
-      data: { full_name: user!.full_name, reset_password_code: resetPasswordCode }
+      data: { client_name: client[0].name, client_uen: client[0].uen, reset_password_code: resetPasswordCode }
    })
 
    logger.info(`\nReset Password code is sent to ${email}`);
@@ -146,7 +150,7 @@ async function updateResetPasswordCode(email: string, code: number) {
    }
 }
 
-const pwdUpdate = asyncHandler(async (req: Request, res: Response) => {
+const resetPassword = asyncHandler(async (req: Request, res: Response) => {
 
    const { code, password } = req.body;
 
@@ -174,7 +178,6 @@ const pwdUpdate = asyncHandler(async (req: Request, res: Response) => {
    }
 });
 
-
 const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
 
    const sftp = new Client();
@@ -185,7 +188,7 @@ const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
    if (!req.file) {
       logger.info(`No image to be uploaded and ONLY user data update!`);
    } else {
-      
+
       try {
 
          logger.info("There is Image to be uploaded with user data update!");
@@ -207,7 +210,7 @@ const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
          profile_pic = req.file.originalname;
 
          logger.info(`1 >>>> ${profile_pic}`);
-         
+
       } catch (err) {
          console.error(err);
          logger.info(`Image Upload Error >>>> ${err}`);
@@ -217,11 +220,26 @@ const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
 
    logger.info(`2 >>>> ${profile_pic}`);
 
-   const { user_id, full_name, phone, username, email } = req.body;
+   const { user_id, phone, username, email } = req.body;
+
+   const user = await getUserById(user_id);
+
+   if (user!.email !== email && await isEmailExists(email)) {
+      res.json({ status: 'error', message: 'Email already exists!' });
+   }
+
+   if (user!.username !== username && await isUsernameExists(username)) {
+      res.json({ status: 'error', message: 'Username already exists!' });
+   }
+
+   let credentialsUpdate = 0;
+   if (user!.email !== email || user!.username !== username) {
+      credentialsUpdate = 1;
+   }
 
    const [results] = await db.query(
-      "UPDATE users SET full_name = ?, phone = ?, username = ?, profile_pic = ? WHERE user_id = ? and email = ?",
-      [full_name, phone, username, profile_pic, user_id, email]
+      "UPDATE users SET email = ?, username = ?, phone = ?, profile_pic = ? WHERE user_id = ?",
+      [email, username, phone, profile_pic, user_id]
    );
 
    // Cast the result to ResultSetHeader
@@ -230,7 +248,7 @@ const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
    logger.info(`Updated ${typedResult.affectedRows} record(s)`);
 
    if (typedResult.affectedRows > 0) {
-      res.json({ status: 'ok', message: 'Profile Updated' });
+      res.json({ status: 'ok', message: 'Profile Updated', credentialsUpdate });
    } else {
       res.json({ status: 'error', message: 'Error or No update' });
    }
@@ -238,4 +256,123 @@ const profileUpdate = asyncHandler(async (req: Request, res: Response) => {
 });
 
 
-export { registerUser, loginUser, pwdEmail, pwdUpdate, profileUpdate }
+async function getUserById(user_id: number) {
+   try {
+
+      const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM users WHERE user_id = ?', [user_id]);
+
+      // 'rows' is an array containing the results of the query.
+      if (rows.length > 0) {
+         logger.info(`Found ${rows.length} users.`);
+         return rows[0]; // Return the first matching user object
+      } else {
+         return null; // No user found with the given ID
+      }
+
+   } catch (error) {
+      logger.info('Error fetching user:', error);
+      throw error; // Re-throw the error for the calling function to handle
+   }
+}
+
+async function isEmailExists(email: string) {
+   try {
+
+      const [rows] = await db.execute<RowDataPacket[]>('SELECT email FROM users WHERE email = ?', [email]);
+
+      // 'rows' is an array containing the results of the query.
+      if (rows.length > 0) {
+         logger.info(`Found ${rows.length} users.`);
+         return true; // Return true
+      } else {
+         return null; // No user found with the given ID
+      }
+
+   } catch (error) {
+      logger.info('Error fetching user:', error);
+      throw error; // Re-throw the error for the calling function to handle
+   }
+}
+
+async function isUsernameExists(username: string) {
+   try {
+
+      const [rows] = await db.execute<RowDataPacket[]>('SELECT username FROM users WHERE username = ?', [username]);
+
+      // 'rows' is an array containing the results of the query.
+      if (rows.length > 0) {
+         logger.info(`Found ${rows.length} users.`);
+         return true; // Return true
+      } else {
+         return null; // No user found with the given ID
+      }
+
+   } catch (error) {
+      logger.info('Error fetching user:', error);
+      throw error; // Re-throw the error for the calling function to handle
+   }
+}
+
+const updatePassword = asyncHandler(async (req: Request, res: Response) => {
+
+   const { user_id, password } = req.body;
+
+   const hashedPassword = await bcrypt.hash(password, 10);
+
+   const [results] = await db.query(
+      "UPDATE users SET password = ? WHERE user_id = ?",
+      [hashedPassword, user_id]
+   );
+
+   // Cast the result to ResultSetHeader
+   const typedResult = results as ResultSetHeader;
+
+   logger.info(`Updated ${typedResult.affectedRows} record(s)`);
+
+   if (typedResult.affectedRows > 0) {
+      res.json({ status: 'ok', message: 'Password Updated' });
+   }
+
+});
+
+const getAll = asyncHandler(async (req: Request, res: Response) => {
+
+   logger.info(`populating all the users`);
+
+   const [users] = await db.execute<RowDataPacket[]>('SELECT * FROM users order by created_on desc');
+
+   if (users.length > 0) {
+      logger.info(`Found ${users.length} users.`);
+
+      res.status(201).json({
+         status: 'ok',
+         users,
+      })
+
+   } else {
+      res.json({ status: "users_not_exist", message: 'Users not found' });
+   }
+
+});
+
+const getDetail = asyncHandler(async (req: Request, res: Response) => {
+
+   const { user_id } = req.body;
+
+   logger.info(`>>>> User ID ${user_id} >>>>`);
+
+   const [user] = await db.execute<RowDataPacket[]>('SELECT * FROM users WHERE user_id = ?', [user_id]);
+
+   if (user.length > 0) {
+      res.status(201).json({
+         status: 'ok',
+         user,
+      })
+
+   } else {
+      res.json({ status: "user_not_exist", message: 'User not found' });
+   }
+
+});
+
+export { registerUser, loginUser, pwdEmail, resetPassword, profileUpdate, updatePassword, getAll, getDetail }
